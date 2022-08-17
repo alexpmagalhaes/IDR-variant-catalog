@@ -1,0 +1,82 @@
+---
+title: "ClinVar project"
+output: html_notebook
+---
+################################################################################
+## This script contains the code to reproduce to get coordinates of genes     ##
+## Mensah & Niskanen et al.                                                   ##
+## Disruption of nucleolar phase separation in human genetic disease 2022     ##
+## Author: Alexandre P Magalhaes                                              ##
+################################################################################
+
+
+```{r message=FALSE, warning=FALSE}
+library("ensembldb")
+library(rtracklayer)
+library(AnnotationHub)
+library(biomaRt)
+#library("EnsDb.Hsapiens.v86")
+```
+Makes an anotation object for 
+```{r}
+#This will make an Edb file with the latest 
+
+## Load the annotation resource.
+ah <- AnnotationHub()
+## Query for all available EnsDb databases
+ahDb <- query(ah, c("EnsDb", "Hsapiens", "104"))
+ahEdb <- ahDb[[1]]
+gns <- genes(ahEdb)
+```
+```{r message=FALSE, warning=FALSE}
+df <- read.csv("HG38_CanonicalPEP_IDRs_coord.csv", stringsAsFactors=TRUE, row.names = 1)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+Full_gnm_ <- list()
+for(i in 1:nrow(df)){
+  Start <- df$Start[i]
+  End <- df$End[i]
+  ID <- row.names(df)[i]
+  temp_prt <- IRanges(start = Start, end = End, names = ID)
+  temp_gnm <- proteinToGenome(temp_prt, ahEdb)
+  Full_gnm_ <- c(temp_gnm,Full_gnm_)
+}
+```
+
+```{r}
+Full_gnm_U <- unlist(GRangesList(Full_gnm_))
+write.table(Full_gnm_U,file="HG38_canonicalIDRGenomicCoordinates.txt",sep = "\t", row.names = FALSE)
+```
+
+
+```{r}
+#
+con <- file("HG38_canonicalIDRGenomicCoordinates.bed")
+export.bed(Full_gnm_U, con, format = "BED")
+con2 <- file("HG38_canonicalIDRGenomicCoordinates.gff")
+Full_gnm_U = GRangesList(Full_gnm_)
+export.gff(Full_gnm_U, con2, version = "3")
+```
+```{r}
+listEnsembl()
+```
+```{r}
+ensembl <- useEnsembl(biomart = "snps")
+datasets <- listDatasets(ensembl)
+searchDatasets(mart = ensembl, pattern = "hsapiens")
+```
+```{r}
+snpmart <- useEnsembl(biomart = "snps", dataset = "hsapiens_snp")
+```
+```{r}
+filters = c("frameshift_variant","protein_altering_variant","stop_gained","structural_variant")
+atributes = c("refsnp_id","refsnp_source","allele","chr_name","chrom_start","chrom_end")
+
+```
+```{r}
+EnsVar <- biomaRt::getBM(attributes = atributes, filters = filters, mart = snpmart, values = "" )
+
+```
+
