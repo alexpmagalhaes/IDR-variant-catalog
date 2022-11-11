@@ -1,0 +1,70 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+################################################################################
+## This script contains the code to reproduce get Stop codon coordinates      ##
+## Mensah & Niskanen et al.                                                   ##
+## Disruption of nucleolar phase separation in human genetic disease 2022     ##
+## Author: Alexandre P Magalhaes                                              ##
+################################################################################
+
+```{r message=FALSE, warning=FALSE}
+
+library("ensembldb")
+library(rtracklayer)
+library(AnnotationHub)
+library(biomaRt)
+#library("EnsDb.Hsapiens.v86")
+```
+Makes an anotation object for 
+```{r}
+#This will make an Edb file with the latest 
+
+## Load the annotation resource.
+ah <- AnnotationHub()
+## Query for all available EnsDb databases
+ahDb <- query(ah, c("EnsDb", "Hsapiens", "104"))
+ahEdb <- ahDb[[1]]
+gns <- genes(ahEdb)
+```
+```{r message=FALSE, warning=FALSE}
+df <- read.csv("NMD_fs.csv", stringsAsFactors=TRUE)
+```
+
+
+
+
+```{r}
+Full_gnm_ <- list()
+for(i in 1:nrow(df)){
+  Start <- df$CDS_stop[i] -3
+  End <- df$CDS_stop[i] -2
+  ID <- df$Feature[i]
+  temp_prt <- IRanges(start = Start, end = End, names = ID)
+  temp_gnm <- transcriptToGenome(temp_prt, ahEdb)
+  Full_gnm_ <- c(temp_gnm,Full_gnm_)
+}
+```
+```{r}
+Full_gnm_U <- unlist(GRangesList(Full_gnm_))
+```
+
+```{r}
+Full_gnm_U <- unlist(GRangesList(Full_gnm_))
+```
+```{r}
+write.table(Full_gnm_U,file="HG38_stopCoordinates.txt",sep = "\t", row.names = FALSE)
+```
+
+
+```{r}
+#
+con <- file("HG38_stopCoordinates.bed")
+export.bed(Full_gnm_U, con, format = "BED")
+con2 <- file("HG38_stopCoordinates.gff")
+Full_gnm_U = GRangesList(Full_gnm_)
+export.gff(Full_gnm_U, con2, version = "3")
+```
