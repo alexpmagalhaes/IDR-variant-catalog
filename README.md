@@ -1,7 +1,7 @@
 # IDR variant catalog
 This is a repository for IDR variant catalogue of the paper
 Mensah & Niskanen et al.  
-"Disruption of nucleolar phase separation is a frequent pathomechanism in genetic disease"
+"Aberrant phase separation and nucleolar dysfunction can underlie rare genetic diseases 2023"
 
 *Author: Alexandre P Magalhaes*
 

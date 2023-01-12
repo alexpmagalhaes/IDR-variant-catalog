@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#####################################################################################################
+## This script contains the code to filter DisgNET results table                                   ##
+## Mensah & Niskanen et al.                                                                        ##
+## Aberrant phase separation and nucleolar dysfunction can underlie rare genetic diseases 2023     ##
+## Author: Alexandre P Magalhaes                                                                   ##
+#####################################################################################################
+
+
 awk '($1 ~ /^snpId/ || $2 ~ /NA/) {next} {print $0}'
 all_variant_disease_pmid_associations.tsv > all_variant_disease_pmid_associations_clean.tsv
 

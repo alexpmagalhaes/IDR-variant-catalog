@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-################################################################################
-## This script contains the code to reproduce VCF file for VEP and annotation ##
-## Mensah & Niskanen et al.                                                   ##
-## Disruption of nucleolar phase separation in human genetic disease 2022     ##
-## Author: Alexandre P Magalhaes                                              ##
-################################################################################
+#####################################################################################################
+## This script contains the code to reproduce VCF file for VEP and annotation                      ##
+## Mensah & Niskanen et al.                                                                        ##
+## Aberrant phase separation and nucleolar dysfunction can underlie rare genetic diseases 2023     ##
+## Author: Alexandre P Magalhaes                                                                   ##
+#####################################################################################################
 
 bcftools index HS_ensembl_Allchr.vcf.gz
 bedtools intersect -a /Users/magalhae/Desktop/IDRClinVar/VEP/AllEnsembl/HS_ensembl_IDR.vcf.gz -b /Users/magalhae/Desktop/IDRClinVar/FP/HG38_canonicalIDRGenomicCoordinates.bed -header > HS_ensembl_IDR.vcf
